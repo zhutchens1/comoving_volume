@@ -31,8 +31,6 @@ def comoving_volume(ra1,ra2,dec1,dec2,z1,z2,H0,Om0,Ode0):
         Volume of survey spanned by input coordinates.
         Units of Mpc^3.
     """
-
-    """
     cosmo = LambdaCDM(H0,Om0,Ode0)
     dtor=np.pi/180.
     if ra2>=ra1:
