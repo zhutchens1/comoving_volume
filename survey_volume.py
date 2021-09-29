@@ -3,6 +3,10 @@ import numpy as np
 
 def comoving_volume(ra1,ra2,dec1,dec2,z1,z2,H0,Om0,Ode0):
     """
+    Compute the comoving volume of a lat/lon rectangle on-sky,
+    bounded by (ra1,dec1)->(ra2,dec2), and extended over the 
+    redshift range (z1,z2).
+
     Parameters
     -----------------
     ra1 : scalar
