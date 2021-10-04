@@ -47,7 +47,7 @@ def comoving_volume(ra1,ra2,dec1,dec2,z1,z2,H0,Om0,Ode0):
     return (solidangle/(4*np.pi)) * dv
 
 
-def comoving_volume_per_skyarea(z1,z2,H0,Om0,Ode0):
+def comoving_volume_shell(z1,z2,H0,Om0,Ode0):
     """
     Compute the comoving volume per steradian of a spherical
     shell with inner redshift `z1` and outer radius `z2`. To
@@ -82,3 +82,38 @@ def comoving_volume_per_skyarea(z1,z2,H0,Om0,Ode0):
     return (1/(4*np.pi)) * dv
 
 
+def integrate_volume(redshifts, solid_angle, H0, Om0, Ode0):
+    """
+    Compute the comoving volume for a survey
+    whose field-of-view changes with redshift.
+    This function integrates A(z)W(z)dz, where
+    A(z) is the solid angle in str, W(z) is the
+    differential comoving volume per z per str.
+
+    Parameters
+    ---------------------
+    redshifts : array_like
+        Redshifts spanned by the volume. The spacing
+        between elements determines the value of dz.
+        Example: np.linspace(0.1,0.2,1000)
+        Here, dz=(0.2-0.1)/1000 = 1E-4.
+    solid_angle : array_like
+        Solid angle at each `z` in redshifts. Length
+        should match `redshifts` and its units should
+        be expressed in steradians.
+    
+    Returns
+    ---------------------
+    volume : scalar
+        Volume spanned by the input redshift and
+        solid angle, in units Mpc. 
+    """
+    cosmo = LambdaCDM(H0,Om0,Ode0)
+    vol_per_zstr = cosmo.differential_comoving_volume(redshifts)
+    integrand = (solid_angle)*vol_per_zstr
+    return np.sum(integrand*(redshifts[1]-redshifts[0])).value
+   
+
+if __name__=='__main__':
+    x=integrate_volume(np.linspace(2530/3e5,7470/3e5,int(1e4)),np.full(int(1e4),1.465492683585301),100.,0.3,0.7)
+    print(x)
