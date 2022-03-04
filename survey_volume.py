@@ -140,8 +140,8 @@ def sky_area(xx,yy,bins):
         Estimate of the total area, in units corresponding to those
         passed for `xx` and `yy` (e.g., degrees squared).
     """
-    ymax, bin_edges, _ = bstat(xx,yy,'max',bins=bins)
-    ymin, _, _ = bstat(xx,yy,'min',bins=bins)
+    ymax, bin_edges, _ = binned_statistic(xx,yy,'max',bins=bins)
+    ymin, _, _ = binned_statistic(xx,yy,'min',bins=bins)
     dx = bin_edges[1:]-bin_edges[:-1]
     return np.sum((ymax-ymin)*dx)   
 
