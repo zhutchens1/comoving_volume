@@ -1,4 +1,5 @@
 from astropy.cosmology import LambdaCDM
+from scipy.stats import binned_statistic
 import numpy as np
 
 def comoving_volume(ra1,ra2,dec1,dec2,z1,z2,H0,Om0,Ode0):
@@ -113,6 +114,36 @@ def integrate_volume(redshifts, solid_angle, H0, Om0, Ode0):
     integrand = (solid_angle)*vol_per_zstr
     return np.sum(integrand*(redshifts[1]-redshifts[0])).value
    
+def sky_area(xx,yy,bins):
+    """
+    Estimate the on-sky area for an arbitrary geometry. This 
+    algorithm partitions the source distribution as a series
+    of rectangles, with partition widths set by `bins`, such
+    that the total area can be estimated by the sum of the 
+    individual partition areas. This algorithm may be sensitive
+    to the choice of `bins`, and it is very sensitive to outliers.
+
+    Parameters
+    ----------------
+    xx : array_like
+        x-coordinate in arbitrary units (e.g. RA in decimal degrees).
+    yy : array_like
+        y-coordinate in arbitary units (e.g. Dec in decimal degrees).
+    bins : int or array_like
+         If int, `bins` specifies the number of bins, and in turns,
+        a constant partition width. If array_like, it specifies the
+        edges of the bins (length = # bins + 1).
+
+    Returns
+    -----------------
+    area : scalar
+        Estimate of the total area, in units corresponding to those
+        passed for `xx` and `yy` (e.g., degrees squared).
+    """
+    ymax, bin_edges, _ = bstat(xx,yy,'max',bins=bins)
+    ymin, _, _ = bstat(xx,yy,'min',bins=bins)
+    dx = bin_edges[1:]-bin_edges[:-1]
+    return np.sum((ymax-ymin)*dx)   
 
 if __name__=='__main__':
     x=integrate_volume(np.linspace(2530/3e5,7470/3e5,int(1e4)),np.full(int(1e4),1.465492683585301),100.,0.3,0.7)
